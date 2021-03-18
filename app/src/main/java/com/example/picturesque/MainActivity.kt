@@ -10,22 +10,24 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.picturesque.Constants.Companion.IMAGE_TITLE
-import com.example.picturesque.Constants.Companion.IMAGE_URI
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.example.picturesque.Constants.IMAGE_TITLE
+import com.example.picturesque.Constants.IMAGE_URI
 
 class MainActivity : AppCompatActivity() {
     private val imageViewModel: ImageViewModel by viewModels {
         ImageViewModelFactory()
     }
 
+    private lateinit var alertDialog: AlertDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        alertDialog = AlertDialog.Builder(this).setView(R.layout.loading_dialog).create()
 
         val rv: RecyclerView = findViewById(R.id.rv_images)
         val adapter = ImageAdapter(this)
@@ -53,7 +55,9 @@ class MainActivity : AppCompatActivity() {
                 val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 manager.hideSoftInputFromWindow(etText.windowToken, 0)
                 etText.clearFocus()
+                showDialog()
                 imageViewModel.fetchImages(etText.text.toString())
+                closeDialog()
                 return@setOnEditorActionListener true
             }
             return@setOnEditorActionListener false
@@ -64,10 +68,21 @@ class MainActivity : AppCompatActivity() {
                 val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 manager.hideSoftInputFromWindow(etText.windowToken, 0)
                 etText.clearFocus()
+                showDialog()
                 imageViewModel.fetchImages(etText.text.toString())
+                closeDialog()
             } else {
                 Toast.makeText(this, getString(R.string.no_text), Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun showDialog() {
+        alertDialog.show()
+    }
+
+    private fun closeDialog() {
+        alertDialog.dismiss()
+
     }
 }

@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.example.picturesque.Constants.Companion.IMAGE_TITLE
-import com.example.picturesque.Constants.Companion.IMAGE_URI
+import com.example.picturesque.Constants.IMAGE_TITLE
+import com.example.picturesque.Constants.IMAGE_URI
 
 class ImageDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
