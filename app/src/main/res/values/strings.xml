@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Picturesque</string>
+
+    <string name="api_key">fa94c4e456f4c2bbc3dada4e0f9cd6d6</string>
+    <string name="secret">cdb25eaa99ea3bda</string>
+    <string name="search">Ange sökord</string>
+    <string name="btn_search">Sök</string>
+    <string name="no_text">Ange ett sökord</string>
+</resources>

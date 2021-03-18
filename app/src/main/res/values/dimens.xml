@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="rv_images_padding">5dp</dimen>
+    <dimen name="image_row_container_padding">3dp</dimen>
+    <dimen name="image_size">75dp</dimen>
+    <dimen name="title_text_size">30sp</dimen>
+</resources>
