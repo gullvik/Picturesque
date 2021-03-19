@@ -55,9 +55,7 @@ class MainActivity : AppCompatActivity() {
                 val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 manager.hideSoftInputFromWindow(etText.windowToken, 0)
                 etText.clearFocus()
-                showDialog()
-                imageViewModel.fetchImages(etText.text.toString())
-                closeDialog()
+                imageViewModel.fetchImages(etText.text.toString(), this)
                 return@setOnEditorActionListener true
             }
             return@setOnEditorActionListener false
@@ -68,20 +66,18 @@ class MainActivity : AppCompatActivity() {
                 val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 manager.hideSoftInputFromWindow(etText.windowToken, 0)
                 etText.clearFocus()
-                showDialog()
-                imageViewModel.fetchImages(etText.text.toString())
-                closeDialog()
+                imageViewModel.fetchImages(etText.text.toString(), this)
             } else {
                 Toast.makeText(this, getString(R.string.no_text), Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun showDialog() {
+    fun showDialog() {
         alertDialog.show()
     }
 
-    private fun closeDialog() {
+    fun closeDialog() {
         alertDialog.dismiss()
 
     }

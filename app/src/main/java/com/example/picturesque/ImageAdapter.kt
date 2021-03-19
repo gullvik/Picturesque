@@ -39,7 +39,7 @@ class ImageAdapter(val context: Context) : RecyclerView.Adapter<ImageAdapter.Ima
         val photoId = photo.id
         val secret = photo.secret
         val underscore = "_"
-        val size = "s"
+        val size = "w"
         val baseUrl = "https://live.staticflickr.com/"
         val imgUri = "$baseUrl/$serverId/$photoId$underscore$secret$underscore$size.jpg"
         photo.url = imgUri
