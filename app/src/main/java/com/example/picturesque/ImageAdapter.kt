@@ -18,7 +18,7 @@ class ImageAdapter(val context: Context) : RecyclerView.Adapter<ImageAdapter.Ima
         val image: ImageView = view.findViewById(R.id.iv_row_item_image)
     }
 
-    fun setImgUrls(imgUrls: List<FlickrPhoto>) {
+    fun setImages(imgUrls: List<FlickrPhoto>) {
         this.imgUrls = imgUrls
         notifyDataSetChanged()
     }
