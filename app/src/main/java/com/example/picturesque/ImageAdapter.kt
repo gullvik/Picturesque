@@ -46,6 +46,7 @@ class ImageAdapter(val context: Context) : RecyclerView.Adapter<ImageAdapter.Ima
 
         Glide.with(context)
             .load(imgUri)
+            .placeholder(R.drawable.ic_baseline_image_24)
             .into(holder.image)
 
         holder.image.setOnClickListener {
