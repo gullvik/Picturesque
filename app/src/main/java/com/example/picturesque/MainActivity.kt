@@ -2,6 +2,7 @@ package com.example.picturesque
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -19,10 +20,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.picturesque.Constants.IMAGE_TITLE
 import com.example.picturesque.Constants.IMAGE_URI
 
+private const val NIGHT_MODE_KEY = "nightmode"
+
 class MainActivity : AppCompatActivity() {
     private val imageViewModel: ImageViewModel by viewModels {
         ImageViewModelFactory()
     }
+
+    private lateinit var sharedPref: SharedPreferences
 
     private lateinit var alertDialog: AlertDialog
 
@@ -30,18 +35,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        sharedPref = getSharedPreferences("sharedPref", MODE_PRIVATE)
+
+        val mode = sharedPref.getInt(NIGHT_MODE_KEY, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        AppCompatDelegate.setDefaultNightMode(mode)
+
         alertDialog = AlertDialog.Builder(this).setView(R.layout.loading_dialog).create()
 
         val rv: RecyclerView = findViewById(R.id.rv_images)
-        val adapter = ImageAdapter(this)
-        adapter.setImageClickListener(object : ImageClickListener {
-            override fun onClick(photo: FlickrPhoto) {
+        val adapter = ImageAdapter(this) {photo ->
                 val intent = Intent(this@MainActivity, ImageDetailActivity::class.java)
                 intent.putExtra(IMAGE_TITLE, photo.title)
                 intent.putExtra(IMAGE_URI, photo.url)
                 startActivity(intent)
             }
-        })
         rv.adapter = adapter
         rv.layoutManager = GridLayoutManager(this, 3)
 
@@ -74,6 +81,11 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.no_text), Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sharedPref.edit().putInt(NIGHT_MODE_KEY, AppCompatDelegate.getDefaultNightMode()).apply()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
