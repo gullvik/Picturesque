@@ -78,6 +78,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.settings, menu)
+        val mode = AppCompatDelegate.getDefaultNightMode()
+        if (mode == AppCompatDelegate.MODE_NIGHT_YES) {
+            menu!!.getItem(0).setTitle(R.string.night_mode_light)
+        } else {
+            menu!!.getItem(0).setTitle(R.string.night_mode)
+        }
         return true
     }
 
@@ -85,10 +91,11 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.switch_nightmode -> {
                 val mode = AppCompatDelegate.getDefaultNightMode()
-                if (mode == AppCompatDelegate.MODE_NIGHT_YES)
+                if (mode == AppCompatDelegate.MODE_NIGHT_YES) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                else
+                } else {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                }
                 recreate()
             }
         }

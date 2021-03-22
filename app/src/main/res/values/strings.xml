@@ -6,5 +6,6 @@
     <string name="search">Ange sökord</string>
     <string name="btn_search">Sök</string>
     <string name="no_text">Ange ett sökord</string>
-    <string name="night_mode">Night mode</string>
+    <string name="night_mode">Mörkt läge</string>
+    <string name="night_mode_light">Ljust läge</string>
 </resources>
