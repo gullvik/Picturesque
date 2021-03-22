@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
@@ -13,8 +14,9 @@ class ImageViewModel : ViewModel() {
     private var searchString: String? = null
     private var pageCounter: Int = 1
 
-    fun fetchImages(searchString: String) {
+    fun fetchImages(searchString: String, activity: MainActivity) {
         //new search
+        activity.showDialog()
         if (searchString.isNotBlank() && searchString != this.searchString) {
             this.searchString = searchString
             pageCounter = 1
@@ -23,6 +25,8 @@ class ImageViewModel : ViewModel() {
                         RetrofitInstance.api.fetchImages(searchString, pageCounter.toString())
                     val photos = response.photos.photo
                     imagesLiveData.postValue(photos)
+                    delay(1000)
+                    activity.closeDialog()
                 }
             //load more images
         } else if (searchString.isNotBlank() && searchString == this.searchString) {
@@ -37,15 +41,17 @@ class ImageViewModel : ViewModel() {
                 photos.forEach { newPhoto ->
                     oldAndNewPhotos.add(newPhoto)
                 }
+                imagesLiveData.postValue(oldAndNewPhotos)
+                delay(1000)
+                activity.closeDialog()
             }
-            imagesLiveData.postValue(oldAndNewPhotos)
         }
     }
 }
 
-class ImageViewModelFactory : ViewModelProvider.Factory {
+class ImageViewModelFactory : ViewModelProvider.Factory{
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ImageViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(ImageViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")
             return ImageViewModel() as T
         }
