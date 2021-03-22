@@ -1,6 +1,6 @@
 package com.example.picturesque
 
-import com.example.picturesque.Constants.Companion.API_KEY
+import com.example.picturesque.Constants.API_KEY
 import retrofit2.http.*
 
 interface FlickrAPI {

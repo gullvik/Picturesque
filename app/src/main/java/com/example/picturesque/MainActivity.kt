@@ -14,6 +14,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.picturesque.Constants.IMAGE_TITLE
@@ -27,9 +28,9 @@ class MainActivity : AppCompatActivity() {
     private val imageViewModel: ImageViewModel by viewModels {
         ImageViewModelFactory()
     }
-    private lateinit var binding : ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
-    private var searchString : String? = null
+    private var searchString: String? = null
 
     private lateinit var sharedPref: SharedPreferences
 
@@ -47,13 +48,12 @@ class MainActivity : AppCompatActivity() {
 
         alertDialog = AlertDialog.Builder(this).setView(R.layout.loading_dialog).create()
 
-        val adapter = ImageAdapter(this) {photo ->
-                val intent = Intent(this@MainActivity, ImageDetailActivity::class.java)
-                intent.putExtra(IMAGE_TITLE, photo.title)
-                intent.putExtra(IMAGE_URI, photo.url)
-                startActivity(intent)
-            }
-        })
+        val adapter = ImageAdapter(this) { photo ->
+            val intent = Intent(this@MainActivity, ImageDetailActivity::class.java)
+            intent.putExtra(IMAGE_TITLE, photo.title)
+            intent.putExtra(IMAGE_URI, photo.url)
+            startActivity(intent)
+        }
         binding.rvImages.adapter = adapter
         val layoutManager = GridLayoutManager(this, 3)
         binding.rvImages.layoutManager = layoutManager
@@ -64,12 +64,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.rvImages.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+        binding.rvImages.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy > 0) {
                     if (layoutManager.findLastCompletelyVisibleItemPosition() == adapter.itemCount.minus(1)) {
-                        imageViewModel.fetchImages(searchString ?: "")
+                        imageViewModel.fetchImages(searchString ?: "", this@MainActivity)
                     }
                 }
             }
@@ -103,43 +103,46 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        sharedPref.edit().putInt(NIGHT_MODE_KEY, AppCompatDelegate.getDefaultNightMode()).apply()
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.settings, menu)
-        val mode = AppCompatDelegate.getDefaultNightMode()
-        if (mode == AppCompatDelegate.MODE_NIGHT_YES) {
-            menu!!.getItem(0).setTitle(R.string.night_mode_light)
-        } else {
-            menu!!.getItem(0).setTitle(R.string.night_mode)
+        override fun onPause() {
+            super.onPause()
+            sharedPref.edit().putInt(NIGHT_MODE_KEY, AppCompatDelegate.getDefaultNightMode())
+                .apply()
         }
-        return true
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.switch_nightmode -> {
-                val mode = AppCompatDelegate.getDefaultNightMode()
-                if (mode == AppCompatDelegate.MODE_NIGHT_YES) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                }
-                recreate()
+        override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+            menuInflater.inflate(R.menu.settings, menu)
+            val mode = AppCompatDelegate.getDefaultNightMode()
+            if (mode == AppCompatDelegate.MODE_NIGHT_YES) {
+                menu!!.getItem(0).setTitle(R.string.night_mode_light)
+            } else {
+                menu!!.getItem(0).setTitle(R.string.night_mode)
             }
+            return true
         }
-        return true
-    }
 
-    fun showDialog() {
-        alertDialog.show()
-    }
+        override fun onOptionsItemSelected(item: MenuItem): Boolean {
+            when (item.itemId) {
+                R.id.switch_nightmode -> {
+                    val mode = AppCompatDelegate.getDefaultNightMode()
+                    if (mode == AppCompatDelegate.MODE_NIGHT_YES) {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    } else {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    }
+                    recreate()
+                }
+            }
+            return true
+        }
 
-    fun closeDialog() {
-        alertDialog.dismiss()
+        fun showDialog() {
+            alertDialog.show()
+        }
 
-    }
+        fun closeDialog() {
+            alertDialog.dismiss()
+
+        }
+
 }

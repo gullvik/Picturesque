@@ -10,15 +10,10 @@ import com.bumptech.glide.Glide
 
 class ImageAdapter(val context: Context, val onClick: (FlickrPhoto) -> Unit) : RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
 
-    private var imgUrls: List<FlickrPhoto>? = null
+    private var images: List<FlickrPhoto>? = null
 
     class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val image: ImageView = view.findViewById(R.id.iv_row_item_image)
-    }
-
-    fun setImages(imgUrls: List<FlickrPhoto>) {
-        this.imgUrls = imgUrls
-        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
@@ -28,7 +23,7 @@ class ImageAdapter(val context: Context, val onClick: (FlickrPhoto) -> Unit) : R
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        val photo = imgUrls!![position]
+        val photo = images!![position]
         val serverId = photo.server
         val photoId = photo.id
         val secret = photo.secret
@@ -44,11 +39,11 @@ class ImageAdapter(val context: Context, val onClick: (FlickrPhoto) -> Unit) : R
             .into(holder.image)
 
         holder.image.setOnClickListener {
-            onClick(imgUrls!![position])
+            onClick(images!![position])
         }
     }
 
     override fun getItemCount(): Int {
-        return imgUrls?.size ?: 0
+        return images?.size ?: 0
     }
 }
