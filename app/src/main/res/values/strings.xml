@@ -8,4 +8,5 @@
     <string name="no_text">Ange ett sökord</string>
     <string name="night_mode">Mörkt läge</string>
     <string name="night_mode_light">Ljust läge</string>
+    <string name="no_title">No title available</string>
 </resources>

@@ -2,25 +2,28 @@ package com.example.picturesque
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.example.picturesque.Constants.IMAGE_TITLE
 import com.example.picturesque.Constants.IMAGE_URI
+import com.example.picturesque.databinding.ActivityImageDetailBinding
 
 class ImageDetailActivity : AppCompatActivity() {
+
+    private lateinit var binding : ActivityImageDetailBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_image_detail)
+        binding = ActivityImageDetailBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val image: ImageView = findViewById(R.id.iv_photo_detail)
-
-        val title: TextView = findViewById(R.id.tv_title)
-        title.text = intent.getStringExtra(IMAGE_TITLE)
+        binding.tvTitle.text = intent.getStringExtra(IMAGE_TITLE) ?: getString(R.string.no_title)
 
         Glide.with(this)
             .load(intent.getStringExtra(IMAGE_URI))
             .onlyRetrieveFromCache(true)
-            .into(image)
+            .into(binding.ivPhotoDetail)
     }
 }

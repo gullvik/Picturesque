@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -29,8 +30,6 @@ class MainActivity : AppCompatActivity() {
         ImageViewModelFactory()
     }
     private lateinit var binding: ActivityMainBinding
-
-    private var searchString: String? = null
 
     private lateinit var sharedPref: SharedPreferences
 
@@ -60,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
         imageViewModel.imagesLiveData.observe(this) {
             if (it.isNotEmpty()) {
-                adapter.setImages(it)
+                adapter.setImageList(it)
             }
         }
 
@@ -69,80 +68,97 @@ class MainActivity : AppCompatActivity() {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy > 0) {
                     if (layoutManager.findLastCompletelyVisibleItemPosition() == adapter.itemCount.minus(1)) {
-                        imageViewModel.fetchImages(searchString ?: "", this@MainActivity)
+                        loadImages()
                     }
                 }
             }
         })
 
-        val search: Button = findViewById(R.id.btn_search)
-        val etText: EditText = findViewById(R.id.et_search_text)
+        val etText: EditText = binding.etSearchText
         etText.setOnEditorActionListener { _, actionId, _ ->
             if (binding.etSearchText.text.isNotEmpty() && actionId == EditorInfo.IME_ACTION_SEARCH) {
-                searchString = etText.text.toString()
                 val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 manager.hideSoftInputFromWindow(etText.windowToken, 0)
-                etText.clearFocus()
                 imageViewModel.fetchImages(etText.text.toString(), this)
+                etText.clearFocus()
                 return@setOnEditorActionListener true
             }
             Toast.makeText(this, getString(R.string.no_text), Toast.LENGTH_SHORT).show()
             return@setOnEditorActionListener false
         }
 
-        search.setOnClickListener {
-            if (etText.text.isNotEmpty()) {
-                searchString = etText.text.toString()
+        binding.btnSearch.setOnClickListener {
+            if (binding.etSearchText.text.isNotEmpty()) {
                 val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                manager.hideSoftInputFromWindow(etText.windowToken, 0)
-                etText.clearFocus()
-                imageViewModel.fetchImages(etText.text.toString(), this)
+                manager.hideSoftInputFromWindow(binding.etSearchText.windowToken, 0)
+                imageViewModel.fetchImages(binding.etSearchText.text.toString(), this)
+                binding.etSearchText.clearFocus()
             } else {
                 Toast.makeText(this, getString(R.string.no_text), Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    private fun search(searchText: String) {
+        hideSoftInput()
+        imageViewModel.fetchImages(searchText, this)
+    }
 
-        override fun onPause() {
-            super.onPause()
-            sharedPref.edit().putInt(NIGHT_MODE_KEY, AppCompatDelegate.getDefaultNightMode())
-                .apply()
+    private fun loadImages(){
+        imageViewModel.loadImages(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sharedPref.edit().putInt(NIGHT_MODE_KEY, AppCompatDelegate.getDefaultNightMode())
+            .apply()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.settings, menu)
+        val mode = AppCompatDelegate.getDefaultNightMode()
+        if (mode == AppCompatDelegate.MODE_NIGHT_YES) {
+            menu!!.getItem(0).setTitle(R.string.night_mode_light)
+        } else {
+            menu!!.getItem(0).setTitle(R.string.night_mode)
         }
+        return true
+    }
 
-        override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-            menuInflater.inflate(R.menu.settings, menu)
-            val mode = AppCompatDelegate.getDefaultNightMode()
-            if (mode == AppCompatDelegate.MODE_NIGHT_YES) {
-                menu!!.getItem(0).setTitle(R.string.night_mode_light)
-            } else {
-                menu!!.getItem(0).setTitle(R.string.night_mode)
-            }
-            return true
-        }
-
-        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-            when (item.itemId) {
-                R.id.switch_nightmode -> {
-                    val mode = AppCompatDelegate.getDefaultNightMode()
-                    if (mode == AppCompatDelegate.MODE_NIGHT_YES) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    } else {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    }
-                    recreate()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.switch_nightmode -> {
+                val mode = AppCompatDelegate.getDefaultNightMode()
+                if (mode == AppCompatDelegate.MODE_NIGHT_YES) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 }
+                recreate()
             }
-            return true
         }
+        return true
+    }
 
-        fun showDialog() {
-            alertDialog.show()
-        }
+    fun showDialog() {
+        alertDialog.show()
+    }
 
-        fun closeDialog() {
-            alertDialog.dismiss()
+    fun closeDialog() {
+        alertDialog.dismiss()
+    }
 
-        }
+    fun showProgress() {
+        binding.pbLoadImages.visibility = View.VISIBLE
+    }
 
+    fun hideProgress() {
+        binding.pbLoadImages.visibility = View.GONE
+    }
+
+    private fun hideSoftInput() {
+        val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        manager.hideSoftInputFromWindow(binding.etSearchText.windowToken, 0)
+        binding.etSearchText.clearFocus()
+    }
 }

@@ -15,43 +15,48 @@ class ImageViewModel : ViewModel() {
     private var pageCounter: Int = 1
 
     fun fetchImages(searchString: String, activity: MainActivity) {
-        //new search
         activity.showDialog()
-        if (searchString.isNotBlank() && searchString != this.searchString) {
+        if (searchString.isNotBlank()) {
             this.searchString = searchString
             pageCounter = 1
-                viewModelScope.launch {
-                    val response: FlickrSearchResponse =
-                        RetrofitInstance.api.fetchImages(searchString, pageCounter.toString())
-                    val photos = response.photos.photo
-                    imagesLiveData.postValue(photos)
-                    delay(1000)
-                    activity.closeDialog()
-                }
-            //load more images
-        } else if (searchString.isNotBlank() && searchString == this.searchString) {
-            val oldAndNewPhotos = ArrayList<FlickrPhoto>()
-            pageCounter++
-            imagesLiveData.value!!.forEach { oldPhoto ->
-                oldAndNewPhotos.add(oldPhoto)
-            }
             viewModelScope.launch {
-                val response: FlickrSearchResponse = RetrofitInstance.api.fetchImages(searchString, pageCounter.toString())
+                val response: FlickrSearchResponse =
+                    RetrofitInstance.api.fetchImages(searchString, pageCounter.toString())
                 val photos = response.photos.photo
-                photos.forEach { newPhoto ->
-                    oldAndNewPhotos.add(newPhoto)
-                }
-                imagesLiveData.postValue(oldAndNewPhotos)
+                imagesLiveData.postValue(photos)
                 delay(1000)
                 activity.closeDialog()
             }
+            //load more images
+        }
+    }
+
+    fun loadImages(activity: MainActivity) {
+        val oldAndNewPhotos = ArrayList<FlickrPhoto>()
+        pageCounter++
+        imagesLiveData.value!!.forEach { oldPhoto ->
+            oldAndNewPhotos.add(oldPhoto)
+        }
+        viewModelScope.launch {
+            activity.showProgress()
+            val response: FlickrSearchResponse = RetrofitInstance.api.fetchImages(
+                    this@ImageViewModel.searchString!!,
+                    pageCounter.toString()
+                )
+            val photos = response.photos.photo
+            photos.forEach { newPhoto ->
+                oldAndNewPhotos.add(newPhoto)
+            }
+            imagesLiveData.postValue(oldAndNewPhotos)
+            delay(1000)
+            activity.hideProgress()
         }
     }
 }
 
-class ImageViewModelFactory : ViewModelProvider.Factory{
+class ImageViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ImageViewModel::class.java)){
+        if (modelClass.isAssignableFrom(ImageViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return ImageViewModel() as T
         }

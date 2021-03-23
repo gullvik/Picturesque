@@ -1,13 +1,16 @@
 package com.example.picturesque
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.GlideException
 
+private const val TAG = "ImageAdapter"
 class ImageAdapter(val context: Context, val onClick: (FlickrPhoto) -> Unit) : RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
 
     private var images: List<FlickrPhoto>? = null
@@ -22,6 +25,10 @@ class ImageAdapter(val context: Context, val onClick: (FlickrPhoto) -> Unit) : R
         )
     }
 
+    fun setImageList(images: List<FlickrPhoto>) {
+        this.images = images
+    }
+
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         val photo = images!![position]
         val serverId = photo.server
@@ -29,17 +36,22 @@ class ImageAdapter(val context: Context, val onClick: (FlickrPhoto) -> Unit) : R
         val secret = photo.secret
         val underscore = "_"
         val size = "w"
-        val baseUrl = "https://live.staticflickr.com/"
+        val baseUrl = "https://live.staticflickr.com"
         val imgUri = "$baseUrl/$serverId/$photoId$underscore$secret$underscore$size.jpg"
         photo.url = imgUri
 
-        Glide.with(context)
-            .load(imgUri)
-            .placeholder(R.drawable.ic_baseline_image_24)
-            .into(holder.image)
+        try {
+            Glide.with(context)
+                .load(imgUri)
+                .placeholder(R.drawable.ic_baseline_image_24)
+                .into(holder.image)
 
-        holder.image.setOnClickListener {
-            onClick(images!![position])
+            holder.image.setOnClickListener {
+                onClick(images!![position])
+            }
+        } catch (e: GlideException) {
+            Log.e(TAG, "Could not load image: $imgUri with exception ${e.message}")
+            holder.image.setImageResource(R.drawable.ic_baseline_image_24)
         }
     }
 
