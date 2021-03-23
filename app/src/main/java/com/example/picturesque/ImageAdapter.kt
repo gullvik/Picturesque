@@ -27,6 +27,7 @@ class ImageAdapter(val context: Context, val onClick: (FlickrPhoto) -> Unit) : R
 
     fun setImageList(images: List<FlickrPhoto>) {
         this.images = images
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
