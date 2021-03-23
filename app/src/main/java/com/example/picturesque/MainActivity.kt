@@ -74,13 +74,11 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        val etText: EditText = binding.etSearchText
-        etText.setOnEditorActionListener { _, actionId, _ ->
+        binding.etSearchText.setOnEditorActionListener { _, actionId, _ ->
             if (binding.etSearchText.text.isNotEmpty() && actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                manager.hideSoftInputFromWindow(etText.windowToken, 0)
-                imageViewModel.fetchImages(etText.text.toString(), this)
-                etText.clearFocus()
+                manager.hideSoftInputFromWindow(binding.etSearchText.windowToken, 0)
+                imageViewModel.fetchImages(binding.etSearchText.text.toString(), this)
                 return@setOnEditorActionListener true
             }
             Toast.makeText(this, getString(R.string.no_text), Toast.LENGTH_SHORT).show()
@@ -89,10 +87,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnSearch.setOnClickListener {
             if (binding.etSearchText.text.isNotEmpty()) {
-                val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                manager.hideSoftInputFromWindow(binding.etSearchText.windowToken, 0)
-                imageViewModel.fetchImages(binding.etSearchText.text.toString(), this)
-                binding.etSearchText.clearFocus()
+                search(binding.etSearchText.text.toString())
             } else {
                 Toast.makeText(this, getString(R.string.no_text), Toast.LENGTH_SHORT).show()
             }
@@ -100,8 +95,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun search(searchText: String) {
-        hideSoftInput()
         imageViewModel.fetchImages(searchText, this)
+        hideSoftInput()
     }
 
     private fun loadImages(){

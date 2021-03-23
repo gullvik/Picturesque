@@ -15,11 +15,11 @@ class ImageViewModel : ViewModel() {
     private var pageCounter: Int = 1
 
     fun fetchImages(searchString: String, activity: MainActivity) {
-        activity.showDialog()
         if (searchString.isNotBlank()) {
             this.searchString = searchString
             pageCounter = 1
             viewModelScope.launch {
+                activity.showDialog()
                 val response: FlickrSearchResponse =
                     RetrofitInstance.api.fetchImages(searchString, pageCounter.toString())
                 val photos = response.photos.photo
@@ -27,7 +27,6 @@ class ImageViewModel : ViewModel() {
                 delay(1000)
                 activity.closeDialog()
             }
-            //load more images
         }
     }
 
