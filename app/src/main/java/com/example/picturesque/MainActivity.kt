@@ -76,27 +76,17 @@ class MainActivity : AppCompatActivity() {
 
         binding.etSearchText.setOnEditorActionListener { _, actionId, _ ->
             if (binding.etSearchText.text.isNotEmpty() && actionId == EditorInfo.IME_ACTION_SEARCH) {
-                val manager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                manager.hideSoftInputFromWindow(binding.etSearchText.windowToken, 0)
-                imageViewModel.fetchImages(binding.etSearchText.text.toString(), this)
+                search(binding.etSearchText.text.toString())
                 return@setOnEditorActionListener true
             }
             Toast.makeText(this, getString(R.string.no_text), Toast.LENGTH_SHORT).show()
             return@setOnEditorActionListener false
         }
-
-        binding.btnSearch.setOnClickListener {
-            if (binding.etSearchText.text.isNotEmpty()) {
-                search(binding.etSearchText.text.toString())
-            } else {
-                Toast.makeText(this, getString(R.string.no_text), Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
     private fun search(searchText: String) {
-        imageViewModel.fetchImages(searchText, this)
         hideSoftInput()
+        imageViewModel.fetchImages(searchText, this)
     }
 
     private fun loadImages(){
