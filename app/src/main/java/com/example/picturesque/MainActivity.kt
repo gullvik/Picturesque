@@ -82,6 +82,14 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, getString(R.string.no_text), Toast.LENGTH_SHORT).show()
             return@setOnEditorActionListener false
         }
+
+        binding.btnSearch.setOnClickListener {
+            if (binding.etSearchText.text.isNotEmpty()) {
+                search(binding.etSearchText.text.toString())
+            }else {
+                Toast.makeText(this, getString(R.string.no_text), Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun search(searchText: String) {
